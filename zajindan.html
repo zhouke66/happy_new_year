@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cmn-Hans" style="font-size: 16.15px;">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+<title>砸金蛋抽奖</title>
+
+<script>
+	(function (doc, win) {
+		var docEl = doc.documentElement,
+				resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+				recalc = function () {
+					var clientWidth = docEl.clientWidth;
+					if (!clientWidth) return;
+					docEl.style.fontSize = 5 * (clientWidth / 100) + 'px';
+				};
+
+		if (!doc.addEventListener) return;
+		win.addEventListener(resizeEvt, recalc, false);
+		doc.addEventListener('DOMContentLoaded', recalc, false);
+	})(document, window);
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+</head>
+<body onload="init();">
+
+
+
+
+<div class="gamebox">
+    <div class="stage">
+        <img src="images/bg.jpg" class="stage-img" >
+        <div class="lanren">
+            <div class="agg"></div>
+            <div class="agg"></div>
+            <div class="agg"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>您今天还有 <span id="chance">0</span> 次抽奖机会</p>
+    </div>
+    <div class="footer">
+        <a href="#" class="a1" id="acePack1">活动说明</a>
+    </div>
+</div>
+
+
+<!--活动说明-->
+<div class="jn-box">
+  <div class="jn-main">
+    <h1>活动说明</h1>
+    <span class="btn-close">×</span>
+     <div class="tabsbox">
+            <h4>活动时间</h4>
+            <p>2019年2月4日—2019年2月5日23：59</p>
+            <h4>经办人</h4>
+            <p>周科</p>
+            <h4>参与人</h4>
+            <p>本活动为周科好友专属特权活动，其余人均不可参与</p>
+            <h4>活动奖品</h4>
+            <p>工资翻倍</p>
+            <p>完美爱情</p>
+            <p>开心幸福</p>
+            <p>美丽健康</p>
+            </p>
+
+   </div>
+
+  </div>
+</div>
+
+
+
+
+
+<!--没中-->
+<div id="sorryBox" class="sorryBox" style="display: none;">
+    <div>
+        <img src="images/sorry.png" style="margin-bottom: 10%;">
+        <button id="start-again" class="btn">再来一次</button>
+    </div>
+</div>
+<!--中奖-->
+<div id="winBox" class="winBox" >
+    <div class="winBox-main">
+        <p><b>恭喜您</b><br/>砸中了<span id="text"></span></p>
+        <button class="btn" id="btn">收下祝福</button>
+    </div>
+</div>
+
+<!--登记-->
+
+<div id="fromBox" class="fromBox" style="display: none;">
+    <div>
+        <img src="images/banner.png">
+        <div class="from">
+            <input type="text" id="username" placeholder="输入姓名">
+            <input type="tel" id="telphone" placeholder="输入手机号">
+            <div class="clearfix">
+                <input type="text" placeholder="填写验证码">
+                <button id="btn-getcode" class="btn">获取验证码</button>
+            </div>
+            <div class="sorrytext"></div>
+        </div>
+
+        <button id="btn-lq" class="btn">领取</button>
+
+    </div>
+</div>
+
+<!--提交成功-->
+<div id="winBox2" class="winBox" >
+    <div class="winBox-main">
+        <p>恭喜您<br/>领奖成功</p>
+        <button class="btn" id="btn2">确定</button>
+    </div>
+</div>
+<!--关注我们二维码-->
+<div class="qrcodeBox" style="display: none;">
+    <div>
+        <img src="images/erweima.png">
+        <span class="qr-close">×</span>
+    </div>
+</div>
+
+
+<!--已用完-->
+<div id="winBox3" class="winBox" >
+    <div class="winBox-main">
+        <p>你今天的5次砸蛋机会<br/>已经用完！</p>
+        <button onclick="window.location.href = 'happy.html'"class="btn" id="btn3">确定</button>
+    </div>
+</div>
+
+
+
+
+
+<img src="images/musicIocn.png" id="audioBtn"    class="music add">
+<audio id="bgMusic" class="media-audio" src="images/memories.mp3" autoplay="autoplay" loop></audio >
+
+<script type="text/javascript" src="js/jquery_jindan.min.js"></script>
+
+<script>
+
+    var chance = 5;  //砸蛋次数
+
+    function init() {
+
+
+
+
+ var music = document.getElementById("bgMusic");
+    $("#audioBtn").click(function(){
+        if(music.paused){//检查视频是否已暂停 true 指示音频/视频已暂停。否则为 false。
+            music.play();//开始播放
+            $("#audioBtn").addClass("add");
+        }else{
+            music.pause();//暂停播放
+            $("#audioBtn").removeClass("add");
+        }
+    });
+
+        var winH = $(window).innerHeight();
+        var winW = $(window).innerWidth();
+        $("body,.gamebox,.jn-box").css({height:winH,width:winW});
+
+        $("#chance").text(chance);
+
+
+        function aClick() {
+	      var msg = ["完美爱情","美丽健康","开心幸福","工资翻倍","对不起"]
+		  var bb=msg[Math.floor(Math.random() * msg.length)];
+            $(".agg").off("click", aClick);
+
+            chance-=1;
+            $("#chance").text(chance);
+
+            if(chance<0){
+                chance = 0;
+                $("#chance").text(chance);
+                 $("#winBox3").show();
+                $(".agg").on("click", aClick);
+            }
+            else {
+                var _this = $(this);
+                _this.parents(".lanren").addClass("paused");
+                _this.html('<img src="images/hammer.png" class="hammer"><img src="images/agg-puo.png" class="agg-puo">');
+
+                setTimeout(function () {
+                    _this.css({background:"none"}).find(".agg-puo").show();
+
+                    setTimeout(function () {
+//是否中奖
+
+
+                        if (bb == "对不起"){
+                            $("#sorryBox").show();
+
+                        }
+                        else {
+                            $("#text").html(bb);
+                            $("#winBox").show();
+
+
+                        }
+
+                    },500);
+                },250);
+            }
+
+        }
+
+        $(".agg").on("click", aClick);
+      //登记
+        $("#btn").on('click', function () {
+			$("#winBox").hide();
+            $("#winBox2").show();
+        });
+
+        //重新开始
+        $("#start-again").on('click', function () {
+            $("#sorryBox").hide();
+            $(".lanren").removeClass("paused");
+            $(".agg").on("click", aClick).html("").attr("style","");
+        });
+       $("#btn2").on('click', function () {
+            $("#winBox2").hide();
+            $(".lanren").removeClass("paused");
+            $(".agg").on("click", aClick).html("").attr("style","");
+        });
+	   $("#btn3").on('click', function () {
+            $("#winBox3").hide();
+        });
+        //活动规则
+        $("#acePack1").on('click', function(){
+            $(".jn-box").show().find(".btn-close").on('click',function () {
+                $(".jn-box").hide();
+            });
+            console.log($("#tabs1").height());
+            $("#tabs-body1").css({height:winH - $("#tabs1").height()});
+        });
+        //我的奖品
+        $("#acePack2").on('click', function(){
+            $(".jn-box2").show().find(".btn-close").on('click',function () {
+                $(".jn-box2").hide();
+            });
+            console.log($("#tabs2").height());
+            $("#tabs-body2").css({height:winH - $("#tabs2").height()});
+        });
+
+
+
+        //关注二维码
+        $(".btn-qrcode").on('click', function(){
+            $(".qrcodeBox").show().find(".qr-close").on('click',function () {
+                $(".qrcodeBox").hide();
+            });
+        });
+
+
+        //获取验证码
+        var waitCode=60;
+        function time(o) {
+            if (waitCode == 0) {
+                o.removeAttr("disabled");
+                o.text("获取验证码");
+                waitCode = 2;
+            } else {
+                o.attr("disabled","");
+                o.text("重新发送(" + waitCode + ")");
+                waitCode--;
+                setTimeout(function() {
+                    time(o)
+                },1000);
+            }
+        }
+        $("#btn-getcode").on('click', function(){
+            time($(this));
+        });
+
+        //登记
+        $("#btn-lq").on('click', function(){
+			var text1=$("#username").val();
+			var text2=$("#telphone").val();
+		if(text1 !="" && text2 !="" && /^1[34578]\d{9}$/.test(text2)){
+
+			 $("#fromBox").hide();
+             $("#winBox2").show();
+			return true;
+		}else if(text1 =="" ){
+			$(".sorrytext").show();
+			$(".sorrytext").text("请输入姓名");
+			return false;
+	    }else if(text2 =="" ){
+			$(".sorrytext").show();
+			$(".sorrytext").text("请输入手机号码");
+			return false;
+	    }else{
+			$(".sorrytext").show();
+			$(".sorrytext").text("手机号码错误");
+		    return false;
+	    }
+        });
+
+    }
+
+
+    (function () {
+        var init = function () {
+            var updateOrientation = function () {
+                var orientation = window.orientation;
+                switch (orientation) {
+                    case 90:
+                    case -90:
+                        orientation = 'landscape'; //这里是横屏
+                        break;
+                    default:
+                        orientation = 'portrait'; //这里是竖屏
+                        break;
+                }
+                document.body.parentNode.setAttribute('class', orientation);
+            };
+            window.addEventListener('orientationchange', updateOrientation, false);
+            updateOrientation();
+        };
+        window.addEventListener('DOMContentLoaded', init, false);
+    })();
+
+</script>
+</body>
+</html>
